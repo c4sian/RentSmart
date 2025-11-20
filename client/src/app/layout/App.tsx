@@ -1,26 +1,28 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { Container, CssBaseline } from "@mui/material";
+//import { useAccommodations } from "../../lib/hooks/useAccommodations";
+import NavBar from "./NavBar";
+import HomePage from "../../features/home/HomePage";
+
 
 function App() {
-  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
+  //const { accommodations } = useAccommodations();
 
-  useEffect(() => {
-    axios.get<Accommodation[]>('https://localhost:5001/api/accommodations')
-      .then(response => setAccommodations(response.data));
-
-    return () => { }
-  }, [])
+  //if (!accommodations) return <Typography>No accommodations</Typography>
 
   return (
-    <>
-      <h3>RentSmart</h3>
-      <ul>
+    <Container disableGutters sx={{ bgcolor: "#EFEFEF", minWidth: "100vw" }}>
+      <CssBaseline />
+      <NavBar />
+      {/* <ul>
         {accommodations.map((accommodation) => (
           <li key={accommodation.id}>{accommodation.title}</li>
         ))}
-      </ul>
-    </>
+      </ul> */}
+      <HomePage />
+    </Container>
   )
 }
 
 export default App
+
+
