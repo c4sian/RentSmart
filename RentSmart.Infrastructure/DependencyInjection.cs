@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RentSmart.Application.Interfaces;
 using RentSmart.Infrastructure.Persistence;
 using RentSmart.Infrastructure.Repositories;
+using RentSmart.Infrastructure.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace RentSmart.Infrastructure
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAccommodationsRepository, AccommodationsRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IJwtService, JwtService>();
 
             return services;
         }

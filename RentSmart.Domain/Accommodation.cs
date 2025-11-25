@@ -9,11 +9,11 @@ namespace RentSmart.Domain
     public class Accommodation
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public required string Title { get; set; }
-        public required string Description { get; set; }
-        public required string Location { get; set; }
-        public required decimal PricePerNight { get; set; }
-        public required string Type { get; set; }
+        public string Title { get; set; } = default!;
+        public string Description { get; set; } = default!;
+        public string Location { get; set; } = default!;
+        public decimal PricePerNight { get; set; }
+        public string Type { get; set; } = default!;
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     }
 }
