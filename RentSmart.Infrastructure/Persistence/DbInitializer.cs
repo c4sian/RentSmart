@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using RentSmart.Domain;
 using RentSmart.Infrastructure.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace RentSmart.Infrastructure.Persistence
                 await roleManager.CreateAsync(new IdentityRole("User"));
 
             var admin = await userManager.FindByEmailAsync("admin@rentsmart.com");
-            if(admin == null)
+            if (admin == null)
             {
                 admin = new AppUser
                 {
@@ -30,5 +31,107 @@ namespace RentSmart.Infrastructure.Persistence
                 await userManager.AddToRoleAsync(admin, "Admin");
             }
         }
+
+        public static async Task SeedAmenities(AppDbContext dbContext)
+        {
+            if (dbContext.Amenities.Any()) return;
+
+            var amenities = new List<Amenity>
+            {
+                new Amenity
+                {
+                    Name = "Wi-Fi"
+                },
+                new Amenity
+                {
+                    Name = "Parking"
+                },
+                new Amenity
+                {
+                    Name = "AC"
+                },
+                new Amenity
+                {
+                    Name = "Heating"
+                },
+                new Amenity
+                {
+                    Name = "TV"
+                },
+                new Amenity
+                {
+                    Name = "Fully Equipped Kitchen"
+                },
+                new Amenity
+                {
+                    Name = "Washing Machine"
+                },
+                new Amenity
+                {
+                    Name = "Dryer"
+                },
+                new Amenity
+                {
+                    Name = "Hair Dryer"
+                },
+                new Amenity
+                {
+                    Name = "Toiletries (soap,shampoo,towels)"
+                },
+                new Amenity
+                {
+                    Name = "Swimming Pool"
+                },
+                new Amenity
+                {
+                    Name = "BBQ/Grill"
+                },
+                new Amenity
+                {
+                    Name = "Balcony/Terrace"
+                },
+                new Amenity
+                {
+                    Name = "Garden / Backyard"
+                },
+                new Amenity
+                {
+                    Name = "Smoke Detector"
+                },
+                new Amenity
+                {
+                    Name = "Security System"
+                },
+            };
+
+            await dbContext.Amenities.AddRangeAsync(amenities);
+            await dbContext.SaveChangesAsync();
+        }
+
+        /*
+        public static async Task SeedAccommodations(AppDbContext dbContext)
+        {
+            if (dbContext.Accommodations.Any()) return;
+
+            var accommodations = new List<Accommodation>
+            {
+                new Accommodation
+                {
+                    Title="",
+                    Description="",
+                    Country = "",
+                    StateOrCounty = "",
+                    City = "",
+                    Street = "",
+                    Type = "",
+                    GuestsNumber = 0,
+                    PricePerNight = 0,
+                    CheckIn = "",
+                    CheckOut = "",
+                    OwnerId = ""
+                }
+            };
+        }
+        */
     }
 }

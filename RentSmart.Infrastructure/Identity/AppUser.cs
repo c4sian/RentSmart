@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RentSmart.Domain;
+using RentSmart.Infrastructure.Persistence.IntermediaryTables;
 
 namespace RentSmart.Infrastructure.Identity
 {
@@ -12,5 +9,11 @@ namespace RentSmart.Infrastructure.Identity
         public string DisplayName { get; set; } = default!;
         public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // navigation
+        public ICollection<ListedAccommodation> ListedAccommodations { get; set; } = [];
+        public ICollection<FavoriteAccommodation> FavoriteAccommodations { get; set; } = [];
+        public ICollection<UserBooking> Bookings { get; set; } = [];
+        public ICollection<UserReview> Reviews { get; set; } = [];
     }
 }

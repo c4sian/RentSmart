@@ -9,12 +9,6 @@ namespace RentSmart.API.Controllers
     [ApiController]
     public class BaseApiController : ControllerBase
     {
-        private IAccommodationsRepository? _accommodationRepository;
-
-        protected IAccommodationsRepository AccommodationRepository =>
-            _accommodationRepository ??= HttpContext.RequestServices.GetService<IAccommodationsRepository>()
-                ?? throw new InvalidOperationException("IAccommodationsRepository service is unavailable.");
-
         protected IActionResult HandleResult<T>(Result<T> result)
         {
             if (!result.IsSuccess && result.Code == 404) return NotFound();

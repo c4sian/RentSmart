@@ -7,6 +7,8 @@ using RentSmart.Application;
 using RentSmart.Infrastructure;
 using RentSmart.Infrastructure.Identity;
 using RentSmart.Infrastructure.Persistence;
+using RentSmart.Infrastructure.Photos;
+using RentSmart.Infrastructure.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,9 +27,22 @@ namespace RentSmart.API
                 opt.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            builder.Services.AddCors();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("https://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
+
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration
+                .GetSection("CloudinarySettings"));
 
             builder.Services.AddAuthentication(options =>
             {
@@ -64,10 +79,19 @@ namespace RentSmart.API
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsOwner", policy =>
+                {
+                    policy.Requirements.Add(new IsOwnerRequirement());
+                });
+            });
+            builder.Services.AddTransient<IAuthorizationHandler, IsOwnerHandler>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
+            app.UseCors("AllowFrontend");
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -80,8 +104,10 @@ namespace RentSmart.API
             {
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var dbContext = services.GetRequiredService<AppDbContext>();
 
                 await DbInitializer.SeedRolesAndAdmin(userManager, roleManager);
+                await DbInitializer.SeedAmenities(dbContext);
             }
             catch (Exception ex)
             {

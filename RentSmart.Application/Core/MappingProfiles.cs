@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using RentSmart.Application.DTOs.Accommodations;
+using RentSmart.Application.DTOs.Images;
 using RentSmart.Domain;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace RentSmart.Application.Core
             CreateMap<Accommodation, AccommodationDto>().ReverseMap();
             CreateMap<CreateAccommodationDto, Accommodation>();
             CreateMap<UpdateAccommodationDto, Accommodation>();
+            CreateMap<AccommodationImage, ImageDto>();
         }
     }
 }

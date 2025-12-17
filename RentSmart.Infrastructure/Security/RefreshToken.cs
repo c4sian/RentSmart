@@ -12,9 +12,12 @@ namespace RentSmart.Infrastructure.Security
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Token { get; set; } = default!;
+        public bool IsUsed { get; set; }
+        public bool IsRevoked { get; set; }
         public DateTime ExpiresAt { get; set; }
+        public DateTime? UsedAt { get; set; }
         public string UserId { get; set; } = default!;
 
-        public AppUser User { get; set; }
+        public AppUser User { get; set; } = default!;
     }
 }

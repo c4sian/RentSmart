@@ -10,7 +10,8 @@ namespace RentSmart.Application.Interfaces
 {
     public interface IJwtService
     {
-        Task<LoginResponseDto> CreateJwtToken(JwtUserData jwtUser, List<string> roles);
+        TokenModel CreateJwtToken(string userId, string userEmail, List<string> roles);
+        Task<TokenModel> GenerateRefreshToken(string userId);
         Task<LoginResponseDto?> ValidateRefreshToken(string refreshToken);
     }
 }

@@ -22,6 +22,21 @@ namespace RentSmart.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AccommodationAmenity", b =>
+                {
+                    b.Property<string>("AccommodationsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AmenitiesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AccommodationsId", "AmenitiesId");
+
+                    b.HasIndex("AmenitiesId");
+
+                    b.ToTable("AccommodationAmenities", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -160,6 +175,22 @@ namespace RentSmart.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CheckIn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckOut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -167,12 +198,22 @@ namespace RentSmart.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Location")
+                    b.Property<int>("GuestsNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PricePerNight")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("StateOrCounty")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -185,6 +226,110 @@ namespace RentSmart.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Accommodations");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.AccommodationImage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccommodationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("Bytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("AccommodationImages");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Amenity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Amenities");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Booking", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccommodationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Review", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccommodationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("RentSmart.Infrastructure.Identity.AppUser", b =>
@@ -262,6 +407,66 @@ namespace RentSmart.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.FavoriteAccommodation", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccommodationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "AccommodationId");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("FavoriteAccommodations");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.ListedAccommodation", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccommodationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "AccommodationId");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("ListedAccommodations");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.UserBooking", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "BookingId");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("UserBookings");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.UserReview", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReviewId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "ReviewId");
+
+                    b.HasIndex("ReviewId");
+
+                    b.ToTable("UserReviews");
+                });
+
             modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshToken", b =>
                 {
                     b.Property<string>("Id")
@@ -270,9 +475,18 @@ namespace RentSmart.Infrastructure.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -283,6 +497,21 @@ namespace RentSmart.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("AccommodationAmenity", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", null)
+                        .WithMany()
+                        .HasForeignKey("AccommodationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RentSmart.Domain.Amenity", null)
+                        .WithMany()
+                        .HasForeignKey("AmenitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -336,6 +565,115 @@ namespace RentSmart.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RentSmart.Domain.AccommodationImage", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", "Accommodation")
+                        .WithMany("Images")
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Booking", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", "Accommodation")
+                        .WithMany("Bookings")
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Review", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", "Accommodation")
+                        .WithMany("Reviews")
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.FavoriteAccommodation", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", "Accommodation")
+                        .WithMany()
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
+                        .WithMany("FavoriteAccommodations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.ListedAccommodation", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Accommodation", "Accommodation")
+                        .WithMany()
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
+                        .WithMany("ListedAccommodations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.UserBooking", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Persistence.IntermediaryTables.UserReview", b =>
+                {
+                    b.HasOne("RentSmart.Domain.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshToken", b =>
                 {
                     b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
@@ -345,6 +683,26 @@ namespace RentSmart.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentSmart.Domain.Accommodation", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("RentSmart.Infrastructure.Identity.AppUser", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("FavoriteAccommodations");
+
+                    b.Navigation("ListedAccommodations");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

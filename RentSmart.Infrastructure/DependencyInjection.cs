@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RentSmart.Application.Interfaces;
 using RentSmart.Infrastructure.Persistence;
+using RentSmart.Infrastructure.Photos;
 using RentSmart.Infrastructure.Repositories;
 using RentSmart.Infrastructure.Security;
 using System;
@@ -23,6 +24,8 @@ namespace RentSmart.Infrastructure
             services.AddScoped<IAccommodationsRepository, AccommodationsRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImagesRepository, ImagesRepository>();
 
             return services;
         }

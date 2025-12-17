@@ -12,6 +12,6 @@ namespace RentSmart.Application.Interfaces
     {
         Task<Result<string>> RegisterUser(RegisterRequestDto registerDto);
         Task<Result<LoginResponseDto>> LoginUser(LoginRequestDto loginRequestDto);
-        Task<Result<LoginResponseDto>> RefreshToken(RefreshRequestDto refreshRequestDto);
+        Task<Result<LoginResponseDto>> RefreshToken(string? refreshToken);
     }
 }

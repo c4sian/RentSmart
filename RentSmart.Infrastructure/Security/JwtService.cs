@@ -22,7 +22,7 @@ namespace RentSmart.Infrastructure.Security
     public class JwtService(IConfiguration configuration, AppDbContext dbContext, UserManager<AppUser> userManager)
         : IJwtService
     {
-        public async Task<LoginResponseDto> CreateJwtToken(JwtUserData jwtUser, List<string> roles)
+        public TokenModel CreateJwtToken(string userId, string userEmail, List<string> roles)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -30,8 +30,9 @@ namespace RentSmart.Infrastructure.Security
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, jwtUser.Id),
-                new Claim(JwtRegisteredClaimNames.Email, jwtUser.Email),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Email, userEmail),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
@@ -48,50 +49,14 @@ namespace RentSmart.Infrastructure.Security
                 signingCredentials: credentials
                 );
 
-            var refreshToken = await GenerateRefreshToken(jwtUser.Id);
-
-            return new LoginResponseDto
+            return new TokenModel
             {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
-                AccessTokenExpiration = tokenValidity,
-
-                RefreshToken = refreshToken.Token,
-                RefreshTokenExpiration = refreshToken.ExpiresAt,
-
-                UserId = jwtUser.Id,
-                DisplayName = jwtUser.DisplayName,
-                Email = jwtUser.Email,
-                ImageUrl = jwtUser.ImageUrl,
-
-                Roles = roles
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = tokenValidity,
             };
         }
 
-        public async Task<LoginResponseDto?> ValidateRefreshToken(string token)
-        {
-            var refreshToken = await dbContext.RefreshTokens.Include("User").FirstOrDefaultAsync(x => x.Token == token);
-
-            if (refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow)
-            {
-                return null;
-            }
-
-            dbContext.RefreshTokens.Remove(refreshToken);
-            await dbContext.SaveChangesAsync();
-
-            var user = refreshToken.User;
-            var roles = await userManager.GetRolesAsync(user);
-
-            return await CreateJwtToken(new JwtUserData
-            {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                Email = user.Email!,
-                ImageUrl = user.ImageUrl,
-            }, roles.ToList());
-        }
-
-        private async Task<RefreshToken> GenerateRefreshToken(string userId)
+        public async Task<TokenModel> GenerateRefreshToken(string userId)
         {
             var tokenValidity = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["Jwt:RefreshTokenValidityDays"]));
 
@@ -105,7 +70,44 @@ namespace RentSmart.Infrastructure.Security
             await dbContext.RefreshTokens.AddAsync(refreshToken);
             await dbContext.SaveChangesAsync();
 
-            return refreshToken;
+            return new TokenModel { Token = refreshToken.Token, Expiration = tokenValidity };
+        }
+
+        public async Task<LoginResponseDto?> ValidateRefreshToken(string refreshToken)
+        {
+            var token = await dbContext.RefreshTokens.Include(x => x.User).FirstOrDefaultAsync(x => x.Token == refreshToken);
+
+            if (token == null || token.ExpiresAt < DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            var rowsAffected = await dbContext.Database.ExecuteSqlInterpolatedAsync($@"
+                UPDATE RefreshTokens
+                SET IsUsed = 1, UsedAt = GETUTCDATE()
+                WHERE Token = {refreshToken} AND IsUsed = 0 AND IsRevoked = 0
+            ");
+
+            if (rowsAffected == 0) return null;
+
+            var user = token.User;
+            var roles = await userManager.GetRolesAsync(user);
+
+            var jwtToken = CreateJwtToken(user.Id, user.Email!, roles.ToList());
+
+            var loginResponseDto = new LoginResponseDto
+            {
+                AccessToken = jwtToken.Token,
+                AccessTokenExpiration = jwtToken.Expiration,
+
+                UserId = user.Id,
+                DisplayName = user.DisplayName,
+                Email = user.Email!,
+
+                Roles = roles.ToList()
+            };
+
+            return loginResponseDto;
         }
     }
 }

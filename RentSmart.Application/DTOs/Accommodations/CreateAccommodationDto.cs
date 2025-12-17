@@ -10,8 +10,17 @@ namespace RentSmart.Application.DTOs.Accommodations
     {
         public required string Title { get; set; }
         public required string Description { get; set; }
-        public required string Location { get; set; }
-        public required decimal PricePerNight { get; set; }
+
+        public required string Country { get; set; }
+        public string? StateOrCounty { get; set; }
+        public required string City { get; set; }
+        public required string Street { get; set; }
+
         public required string Type { get; set; }
+        public int GuestsNumber { get; set; }
+        public decimal PricePerNight { get; set; }
+        public required string CheckIn { get; set; }
+        public required string CheckOut { get; set; }
+        public required List<int> AmenityIds { get; set; }
     }
 }

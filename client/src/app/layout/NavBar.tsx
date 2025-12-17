@@ -1,39 +1,46 @@
-import { Box, AppBar, Toolbar, Typography, Button, MenuItem } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, Button, MenuItem, Avatar } from "@mui/material";
+import { Link, NavLink } from "react-router";
+import { useAccount } from "../../lib/hooks/useAccount";
 
 export default function NavBar() {
+    const { user } = useAccount();
+
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" elevation={0}>
-                <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Box>
-                        <MenuItem>
-                            <Typography variant="h6">RentSmart</Typography>
-                        </MenuItem>
-                    </Box>
-                    <Box display={"flex"} sx={{ gap: 'clamp(0.5rem, 2vw, 2rem)' }}>
-                        <Typography >
-                            Make Reservations
-                        </Typography>
-                        <Typography >
-                            About Us
-                        </Typography>
-                        <Typography >
-                            Activity
-                        </Typography>
-                        <Typography >
-                            Coupons and Promos
-                        </Typography>
-                    </Box>
+        <AppBar position="static" elevation={0}>
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+
+                <MenuItem component={NavLink} to='/' disableRipple
+                    sx={{ "&:hover": { bgcolor: "transparent" } }}>
+                    <Typography variant="h6">RentSmart</Typography>
+                </MenuItem>
+
+                <Box display={"flex"} sx={{ gap: 'clamp(0.5rem, 2vw, 2rem)' }}>
+                    <Typography >
+                        Best Rated
+                    </Typography>
+                    <Typography component={NavLink} to={'/createAccommodation'}>
+                        About Us
+                    </Typography>
+                </Box>
+
+                {user ? (
                     <Box display={"flex"} sx={{ gap: 'clamp(0.25rem, 0.75vw, 1rem)' }}>
-                        <Button color="secondary" variant="contained"
+                        <Avatar />
+                        <Typography variant="subtitle1">{user.displayName}</Typography>
+                    </Box>
+                ) : (
+                    <Box display={"flex"} sx={{ gap: 'clamp(0.25rem, 0.75vw, 1rem)' }}>
+                        <Button color="secondary" variant="contained" disableRipple
+                            component={Link} to='login'
                             sx={{ borderRadius: 5, boxShadow: 2, textTransform: "none" }} disableElevation
                         >Sign In</Button>
-                        <Button color="primary" variant="contained"
+                        <Button color="primary" variant="contained" disableRipple
+                            component={Link} to='register'
                             sx={{ borderRadius: 5, boxShadow: 2, textTransform: "none" }} disableElevation
                         >Sign Up</Button>
                     </Box>
-                </Toolbar>
-            </AppBar>
-        </Box>
+                )}
+            </Toolbar>
+        </AppBar>
     )
 }

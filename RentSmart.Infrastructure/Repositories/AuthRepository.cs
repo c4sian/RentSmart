@@ -6,6 +6,7 @@ using RentSmart.Infrastructure.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace RentSmart.Infrastructure.Repositories
             {
                 var roleResult = await userManager.AddToRoleAsync(user, "User");
 
-                if (roleResult.Succeeded) return Result<string>.Success("User is successfully registered.");
+                if (roleResult.Succeeded) return Result<string>.Success("User successfully registered.");
             }
 
             return Result<string>.Failure("Something went wrong while registering the user.", 400);
@@ -38,35 +39,41 @@ namespace RentSmart.Infrastructure.Repositories
         {
             var user = await userManager.FindByEmailAsync(loginRequestDto.Email);
 
-            if (user == null) return Result<LoginResponseDto>.Failure("The user for this email adress was not found.", 404);
+            if (user == null) return Result<LoginResponseDto>.Failure("Incorrect email or password.", 400);
 
             var checkPasswordResult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
-            if (!checkPasswordResult) return Result<LoginResponseDto>.Failure("The password for this email is incorrect.", 400);
+            if (!checkPasswordResult) return Result<LoginResponseDto>.Failure("Incorrect password.", 400);
 
             var roles = await userManager.GetRolesAsync(user);
 
-            var jwtToken = await jwtService.CreateJwtToken(new JwtUserData
-            {
-                Id = user.Id,
-                DisplayName = user.DisplayName!,
-                Email = user.Email!,
-                ImageUrl = user.ImageUrl,
-            }, roles.ToList());
+            var jwtToken = jwtService.CreateJwtToken(user.Id, user.Email!, roles.ToList());
 
-            return Result<LoginResponseDto>.Success(jwtToken);
+            var loginResponseDto = new LoginResponseDto
+            {
+                AccessToken = jwtToken.Token,
+                AccessTokenExpiration = jwtToken.Expiration,
+
+                UserId = user.Id,
+                DisplayName = user.DisplayName,
+                Email = user.Email!,
+
+                Roles = roles.ToList()
+            };
+
+            return Result<LoginResponseDto>.Success(loginResponseDto);
         }
 
-        public async Task<Result<LoginResponseDto>> RefreshToken(RefreshRequestDto refreshRequestDto)
+        public async Task<Result<LoginResponseDto>> RefreshToken(string? refreshToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshRequestDto.RefreshToken))
+            if (string.IsNullOrWhiteSpace(refreshToken))
                 return Result<LoginResponseDto>.Failure("Token is invalid.", 400);
 
-            var result = await jwtService.ValidateRefreshToken(refreshRequestDto.RefreshToken);
+            var loginResponseDto = await jwtService.ValidateRefreshToken(refreshToken);
 
-            if (result == null) return Result<LoginResponseDto>.Failure("", 401);
+            if (loginResponseDto == null) return Result<LoginResponseDto>.Failure("Refresh token is not valid.", 401);
 
-            return Result<LoginResponseDto>.Success(result);
+            return Result<LoginResponseDto>.Success(loginResponseDto);
         }
     }
 }
