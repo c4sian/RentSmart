@@ -63,7 +63,6 @@ export default function HomePage() {
                         </Button>
                     </Box>
 
-
                 </Stack>
             </Box >
         </ Box >

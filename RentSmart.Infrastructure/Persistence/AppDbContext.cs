@@ -31,6 +31,15 @@ namespace RentSmart.Infrastructure.Persistence
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Accommodation>().Property(p => p.PricePerNight)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Entity<Accommodation>().Property(p => p.AverageRating)
+                .HasColumnType("decimal(3,2)");
+
+            builder.Entity<Review>().HasIndex(i => i.BookingId)
+                .IsUnique();
+
             builder.Entity<Accommodation>()
                 .HasMany(x => x.Images)
                 .WithOne(x => x.Accommodation)

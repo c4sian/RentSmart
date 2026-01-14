@@ -13,7 +13,8 @@ namespace RentSmart.Application.Interfaces
 {
     public interface IImagesRepository
     {
-        Task<Result<List<ImageDto>>> GetImages(string accommodationId);
-        Task<Result<UploadResultDto>> AddImage(IFormFile file, string accommodationId, ClaimsPrincipal user);
+        Task<Result<List<ImageDto>>> GetAllImagesAsync(string accommodationId);
+        Task<Result<UploadResultDto>> AddImageAsync(IFormFile file, string accommodationId, ClaimsPrincipal user);
+        Task<Result<Unit>> ReorderImagesAsync(string accommodationId, List<ImageDto> imagesOrder, ClaimsPrincipal user);
     }
 }

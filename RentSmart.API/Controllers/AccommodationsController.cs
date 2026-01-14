@@ -11,12 +11,14 @@ namespace RentSmart.API.Controllers
     [ApiController]
     public class AccommodationsController(IAccommodationsRepository accommodationsRepository) : BaseApiController
     {
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAccommodations()
         {
             return HandleResult(await accommodationsRepository.GetAllAsync());
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAccommodationDetails([FromRoute] string id)
         {

@@ -12,8 +12,6 @@ import ControlledTimePicker from "../../../app/shared/components/ControlledTimeP
 import { format } from "date-fns"
 import { useNavigate } from "react-router";
 
-
-
 export default function AccommodationForm() {
     const methods = useForm<AccommodationSchema>({
         mode: "onSubmit",
@@ -23,7 +21,7 @@ export default function AccommodationForm() {
 
     const { handleSubmit, formState: { isValid, isSubmitting } } = methods;
 
-    const { addAccommodation } = useAccommodations();
+    const { createAccommodation } = useAccommodations();
 
     const onSubmit = async (data: AccommodationSchema) => {
         const { location, checkIn, checkOut, ...rest } = data;
@@ -34,11 +32,10 @@ export default function AccommodationForm() {
         }
 
         const flattenedData = { ...location, ...formattedData, ...rest };
-        console.log(flattenedData);
-        addAccommodation.mutateAsync(flattenedData, {
-            onSuccess: (data: Accommodation) => {
-                const accommodationId = data.id;
-                navigate(`/accommodationPhotos/${accommodationId}`);
+
+        await createAccommodation.mutateAsync(flattenedData, {
+            onSuccess: (accommodationId: string) => {
+                navigate(`/accommodationImages/${accommodationId}`);
             },
             onError: (error) => {
                 console.log(error);
@@ -50,7 +47,7 @@ export default function AccommodationForm() {
         <Box sx={{ display: "flex", justifyContent: "center" }}>
 
             <FormProvider {...methods}>
-                <Stack component={"form"} onSubmit={handleSubmit(onSubmit)} sx={{ width: "1000px", mt: 2 }} >
+                <Stack component={"form"} onSubmit={handleSubmit(onSubmit)} sx={{ width: "1100px", mt: 2 }} >
 
                     <Paper sx={{ display: "flex", flexDirection: "column", p: 4, borderRadius: 2 }}>
                         <Box sx={{ mb: 2, width: "50%" }}>

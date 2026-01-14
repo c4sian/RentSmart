@@ -6,7 +6,8 @@ import HomePage from "../../features/home/HomePage";
 import AccommodationPage from "../../features/accommodations/details/AccommodationPage";
 import LoginForm from "../../features/account/LoginForm";
 import RegisterForm from "../../features/account/RegisterForm";
-import AccommodationPhotos from "../../features/accommodations/form/AccommodationPhotos";
+import AccommodationImages from "../../features/accommodations/imagesManager/AccommodationImages";
+import ProfilePage from "../../features/profiles/ProfilePage";
 
 export const router = createBrowserRouter([
     {
@@ -17,7 +18,8 @@ export const router = createBrowserRouter([
             { path: 'accommodations', element: <AccommodationsView /> },
             { path: 'accommodations/:id', element: <AccommodationPage /> },
             { path: 'createAccommodation', element: <AccommodationForm /> },
-            { path: 'accommodationPhotos/:id', element: <AccommodationPhotos /> },
+            { path: 'accommodationImages/:id', element: <AccommodationImages /> },
+            { path: 'profile/:id', element: <ProfilePage /> },
             { path: 'login', element: <LoginForm /> },
             { path: 'register', element: <RegisterForm /> },
         ]

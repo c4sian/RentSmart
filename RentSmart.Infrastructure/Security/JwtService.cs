@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RentSmart.Application.Core;
 using RentSmart.Application.DTOs.Auth;
-using RentSmart.Application.Interfaces;
+using RentSmart.Application.Interfaces.Services;
 using RentSmart.Infrastructure.Identity;
 using RentSmart.Infrastructure.Persistence;
 using System;

@@ -10,22 +10,23 @@ export const useAccommodations = (id?: string) => {
     const { data: accommodations, isPending } = useQuery({
         queryKey: ['accommodations'],
         queryFn: async () => {
-            const response = (await api.get<Accommodation[]>('/accommodations'));
+            const response = (await api.get<AccommodationShortData[]>('/accommodations'));
             return response.data;
         },
+        initialData: [],
         enabled: location.pathname === "/accommodations"
     });
 
     const { data: accommodation } = useQuery({
         queryKey: ['accommodations', id],
         queryFn: async () => {
-            const response = await api.get<Accommodation>(`/accommodations/${id}`);
+            const response = await api.get<AccommodationFullData>(`/accommodations/${id}`);
             return response.data;
         },
         enabled: !!id,
     });
 
-    const addAccommodation = useMutation({
+    const createAccommodation = useMutation({
         mutationFn: async (accommodation: FieldValues) => {
             const response = await api.post('/accommodations', accommodation);
             return response.data;
@@ -38,7 +39,7 @@ export const useAccommodations = (id?: string) => {
     })
 
     const updateAccommodation = useMutation({
-        mutationFn: async (accommodation: Accommodation) => {
+        mutationFn: async (accommodation: FieldValues) => {
             await api.put('/accommodations', accommodation);
         },
         onSuccess: async () => {
@@ -52,7 +53,7 @@ export const useAccommodations = (id?: string) => {
         accommodations,
         isPending,
         accommodation,
-        addAccommodation,
+        createAccommodation,
         updateAccommodation
     }
 }

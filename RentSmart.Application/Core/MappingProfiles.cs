@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using RentSmart.Application.DTOs.Accommodations;
+using RentSmart.Application.DTOs.Bookings;
 using RentSmart.Application.DTOs.Images;
+using RentSmart.Application.DTOs.Reviews;
 using RentSmart.Domain;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,20 @@ namespace RentSmart.Application.Core
     {
         public MappingProfiles()
         {
-            CreateMap<Accommodation, AccommodationDto>().ReverseMap();
+            CreateMap<Accommodation, AccommodationShortDto>();
+            CreateMap<Accommodation, AccommodationFullDto>()
+                .ForMember(x => x.AmenityIds, opt => opt.MapFrom(p => p.Amenities.Select(a => a.Id)));
             CreateMap<CreateAccommodationDto, Accommodation>();
             CreateMap<UpdateAccommodationDto, Accommodation>();
+
             CreateMap<AccommodationImage, ImageDto>();
+
+            CreateMap<Booking, BookedDateDto>();
+            CreateMap<Booking, UserBookingDto>();
+            CreateMap<CreateBookingDto, Booking>();
+
+            CreateMap<CreateReviewDto, Review>();
+            
         }
     }
 }

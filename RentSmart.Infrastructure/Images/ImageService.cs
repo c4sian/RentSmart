@@ -1,7 +1,6 @@
 ﻿using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using RentSmart.Application.DTOs.Photos;
-using RentSmart.Application.Interfaces;
 using CloudinaryDotNet;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using RentSmart.Application.Interfaces.Services;
 
 namespace RentSmart.Infrastructure.Photos
 {
@@ -66,7 +66,5 @@ namespace RentSmart.Infrastructure.Photos
 
             return result.Result;
         }
-
-
     }
 }

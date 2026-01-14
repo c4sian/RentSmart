@@ -13,6 +13,7 @@ namespace RentSmart.Domain
         public string Url { get; set; } = default!;
         public string PublicId { get; set; } = default!;
         public long Bytes { get; set; }
+        public int OrderIndex { get; set; }
         public string AccommodationId { get; set; } = default!;
 
         [JsonIgnore]

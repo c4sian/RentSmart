@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using RentSmart.Application.Core;
 using RentSmart.Application.DTOs.Auth;
 using RentSmart.Application.Interfaces;
+using RentSmart.Application.Interfaces.Services;
 using RentSmart.Infrastructure.Identity;
 using RentSmart.Infrastructure.Security;
 using System.Net;

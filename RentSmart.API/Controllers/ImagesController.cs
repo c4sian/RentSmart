@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RentSmart.Application.DTOs.Images;
 using RentSmart.Application.Interfaces;
 
 namespace RentSmart.API.Controllers
@@ -10,15 +11,21 @@ namespace RentSmart.API.Controllers
     public class ImagesController(IImagesRepository imagesRepository) : BaseApiController
     {
         [HttpGet("{accommodationId}")]
-        public async Task<IActionResult> GetImages(string accommodationId)
+        public async Task<IActionResult> GetAccommodationImages([FromRoute] string accommodationId)
         {
-            return HandleResult(await imagesRepository.GetImages(accommodationId));
+            return HandleResult(await imagesRepository.GetAllImagesAsync(accommodationId));
         }
 
         [HttpPost("upload/{accommodationId}")]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromRoute] string accommodationId)
+        public async Task<IActionResult> UploadAccommodationImage([FromForm] IFormFile file, [FromRoute] string accommodationId)
         {
-            return HandleResult(await imagesRepository.AddImage(file, accommodationId, User));
+            return HandleResult(await imagesRepository.AddImageAsync(file, accommodationId, User));
+        }
+
+        [HttpPost("reorder/{accommodationId}")]
+        public async Task<IActionResult> ReorderAccommdodationImages([FromRoute] string accommodationId, [FromBody] List<ImageDto> imagesOrder)
+        {
+            return HandleResult(await imagesRepository.ReorderImagesAsync(accommodationId, imagesOrder, User));
         }
     }
 }

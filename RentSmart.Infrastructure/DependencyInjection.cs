@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RentSmart.Application.Interfaces;
+using RentSmart.Application.Interfaces.Services;
+using RentSmart.Infrastructure.Geocoding;
 using RentSmart.Infrastructure.Persistence;
 using RentSmart.Infrastructure.Photos;
 using RentSmart.Infrastructure.Repositories;
@@ -26,6 +28,11 @@ namespace RentSmart.Infrastructure
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IImagesRepository, ImagesRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IBookingsRepository, BookingsRepository>();
+            services.AddScoped<IReviewsRepository, ReviewsRepository>();
+
+            services.AddHttpClient<IGeocodingService, GeocodingService>();
 
             return services;
         }

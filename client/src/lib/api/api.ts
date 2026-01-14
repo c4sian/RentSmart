@@ -79,7 +79,7 @@ api.interceptors.response.use(async (response) => {
             refreshQueue = [];
 
             queryClient.removeQueries({ queryKey: ['user'] });
-            window.location.href = '/login';
+            // window.location.href = '/login';
 
             return Promise.reject(err);
         }

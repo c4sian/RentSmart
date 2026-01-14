@@ -14,25 +14,26 @@ export default function ControlledSelectInput<T extends FieldValues>({ name, lab
             control={control}
             name={name}
             render={({ field, fieldState: { error } }) =>
-            (<FormControl fullWidth error={!!error}>
-                <InputLabel sx={{ "&.Mui-focused": { color: "grey.700" } }}>{label}</InputLabel>
-                <Select
-                    value={field.value || ''}
-                    label={label}
-                    onChange={field.onChange}
-                    {...props}
-                    sx={{
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "grey.900" }
-                    }}
-                >
-                    {items.map(item => (
-                        <MenuItem key={item.value} value={item.value}>
-                            {item.label}
-                        </MenuItem>
-                    ))}
-                </Select>
-                <FormHelperText>{error?.message}</FormHelperText>
-            </FormControl>)
+            (
+                <FormControl fullWidth error={!!error}>
+                    <InputLabel sx={{ "&.Mui-focused": { color: "grey.700" } }}>{label}</InputLabel>
+                    <Select
+                        {...props}
+                        value={field.value || ''}
+                        label={label}
+                        onChange={field.onChange}
+                        sx={{
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "grey.900" }
+                        }}
+                    >
+                        {items.map(item => (
+                            <MenuItem key={item.value} value={item.value}>
+                                {item.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText>{error?.message}</FormHelperText>
+                </FormControl>)
             }
         />
     )

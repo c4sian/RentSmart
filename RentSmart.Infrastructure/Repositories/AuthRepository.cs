@@ -1,18 +1,25 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RentSmart.Application.Core;
+using RentSmart.Application.DTOs.Accommodations;
 using RentSmart.Application.DTOs.Auth;
 using RentSmart.Application.Interfaces;
+using RentSmart.Application.Interfaces.Services;
 using RentSmart.Infrastructure.Identity;
+using RentSmart.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RentSmart.Infrastructure.Repositories
 {
-    public class AuthRepository(UserManager<AppUser> userManager, IJwtService jwtService) : IAuthRepository
+    public class AuthRepository(UserManager<AppUser> userManager, IJwtService jwtService) 
+        : IAuthRepository
     {
         public async Task<Result<string>> RegisterUser(RegisterRequestDto registerDto)
         {

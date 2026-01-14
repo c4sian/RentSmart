@@ -1,14 +1,20 @@
-import { Box, ButtonBase, Stack, Typography } from "@mui/material";
-import { useParams } from "react-router";
+import { Box, Button, ButtonBase, Stack, Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useImages } from "../../../lib/hooks/useImages";
+import DraggableImageList from "./DraggableImageList";
 
-export default function AccommodationPhotos() {
+export default function AccommodationImages() {
     const { id } = useParams();
-    const { images, uploadImage } = useImages(id);
+    const navigate = useNavigate();
+    const { gettedImages, uploadImage, reorderImages } = useImages(id);
+    const [images, setImages] = useState<Image[]>([]);
 
+    useEffect(() => {
+        setImages(gettedImages);
+    }, [gettedImages]);
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         for (const file of acceptedFiles) {
@@ -22,12 +28,21 @@ export default function AccommodationPhotos() {
         multiple: true
     });
 
+    const handleConfirm = async () => {
+        await reorderImages.mutateAsync(images, {
+            onSuccess: () => {
+                navigate(`/profile/${id}`);
+            },
+            onError: (error) => {
+                console.log(error);
+            }
+        });
+    }
+
     return (
         <Box sx={{ display: "flex", justifyContent: "center", minHeight: "calc(100vh - 4rem)" }}>
 
             <Stack sx={{ width: "1000px", mt: 2, backgroundColor: "primary.main", p: 2, borderRadius: 2 }}>
-                <Typography variant="h4">Photos</Typography>
-                <Typography sx={{ mb: 2 }}>Here you can manage the photos for your property</Typography>
 
                 <ButtonBase sx={{
                     display: "flex", flexDirection: "column",
@@ -51,9 +66,17 @@ export default function AccommodationPhotos() {
                     </Stack>
                 </ButtonBase>
 
-                {images && (
-                    images.map((img) => (<Typography>{img.url}</Typography>))
-                )}
+                <Typography variant="h4">Display gallery</Typography>
+                <Typography sx={{ mb: 2 }}>Drag photos into your preffered order of display</Typography>
+
+                <Box>
+                    <DraggableImageList images={images} setImages={setImages} />
+                    <Button variant="contained" sx={{ bgcolor: "secondary.main", color: "primary.main" }}
+                        onClick={handleConfirm}
+                    >
+                        Confirm Images
+                    </Button>
+                </Box>
             </Stack>
         </Box>
 

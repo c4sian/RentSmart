@@ -8,7 +8,7 @@ import { queryClient } from "../api/queryClient";
 export const useAccount = () => {
     const navigate = useNavigate();
 
-    const { data: user } = useQuery({
+    const { data: user } = useQuery<LoginResponse>({
         queryKey: ['user'],
         queryFn: async () => {
             const response = await api.post('/auth/refresh-token', {}, {
@@ -16,7 +16,7 @@ export const useAccount = () => {
             });
             return response.data;
         },
-        enabled: (queryClient.getQueryData(['user']) !== null)
+        staleTime: Infinity
     });
 
     const registerUser = useMutation({
@@ -30,9 +30,7 @@ export const useAccount = () => {
 
     const loginUser = useMutation({
         mutationFn: async (creds: LoginSchema): Promise<LoginResponse> => {
-            const response = await api.post('/auth/login', creds, {
-                withCredentials: true,
-            });
+            const response = await api.post('/auth/login', creds);
             return response.data;
         },
         onSuccess: (userData) => {

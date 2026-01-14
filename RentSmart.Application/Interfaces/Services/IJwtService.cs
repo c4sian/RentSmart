@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentSmart.Application.Interfaces
+namespace RentSmart.Application.Interfaces.Services
 {
     public interface IJwtService
     {

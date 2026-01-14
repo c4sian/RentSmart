@@ -1,6 +1,7 @@
-import { Box, AppBar, Toolbar, Typography, Button, MenuItem, Avatar } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, Button, MenuItem } from "@mui/material";
 import { Link, NavLink } from "react-router";
 import { useAccount } from "../../lib/hooks/useAccount";
+import UserMenu from "./UserMenu";
 
 export default function NavBar() {
     const { user } = useAccount();
@@ -15,7 +16,7 @@ export default function NavBar() {
                 </MenuItem>
 
                 <Box display={"flex"} sx={{ gap: 'clamp(0.5rem, 2vw, 2rem)' }}>
-                    <Typography >
+                    <Typography>
                         Best Rated
                     </Typography>
                     <Typography component={NavLink} to={'/createAccommodation'}>
@@ -24,10 +25,7 @@ export default function NavBar() {
                 </Box>
 
                 {user ? (
-                    <Box display={"flex"} sx={{ gap: 'clamp(0.25rem, 0.75vw, 1rem)' }}>
-                        <Avatar />
-                        <Typography variant="subtitle1">{user.displayName}</Typography>
-                    </Box>
+                    <UserMenu user={user} />
                 ) : (
                     <Box display={"flex"} sx={{ gap: 'clamp(0.25rem, 0.75vw, 1rem)' }}>
                         <Button color="secondary" variant="contained" disableRipple

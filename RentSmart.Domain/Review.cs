@@ -13,9 +13,10 @@ namespace RentSmart.Domain
         public string Comment { get; set; } = default!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string UserId { get; set; } = default!;
-
         public string AccommodationId { get; set; } = default!;
+        public string UserId { get; set; } = default!;
+        public string BookingId { get; set; } = default!;
+
         public Accommodation Accommodation { get; set; } = default!;
     }
 }
