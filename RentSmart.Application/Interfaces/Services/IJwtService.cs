@@ -12,6 +12,7 @@ namespace RentSmart.Application.Interfaces.Services
     {
         TokenModel CreateJwtToken(string userId, string userEmail, List<string> roles);
         Task<TokenModel> GenerateRefreshToken(string userId);
-        Task<LoginResponseDto?> ValidateRefreshToken(string refreshToken);
+        Task<LoginResponseDto?> RefreshJwtToken(string? refreshToken);
+        Task RevokeRefreshToken(string? refreshToken);
     }
 }

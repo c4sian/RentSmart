@@ -35,10 +35,7 @@ export default function AccommodationForm() {
 
         await createAccommodation.mutateAsync(flattenedData, {
             onSuccess: (accommodationId: string) => {
-                navigate(`/accommodationImages/${accommodationId}`);
-            },
-            onError: (error) => {
-                console.log(error);
+                navigate(`/accommodation-images/${accommodationId}`);
             }
         })
     }

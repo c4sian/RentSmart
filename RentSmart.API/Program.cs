@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using RentSmart.API.Middleware;
 using RentSmart.Application;
 using RentSmart.Infrastructure;
 using RentSmart.Infrastructure.Identity;
@@ -87,11 +88,13 @@ namespace RentSmart.API
                 });
             });
             builder.Services.AddTransient<IAuthorizationHandler, IsOwnerHandler>();
+            //builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             app.UseCors("AllowFrontend");
+            //app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();

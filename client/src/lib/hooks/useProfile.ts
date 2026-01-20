@@ -1,27 +1,28 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import api from "../api/api"
+import { useLocation } from "react-router";
 
-export const useProfile = (id?: string) => {
+export const useProfile = () => {
+    const location = useLocation();
+
     const { data: userData } = useQuery<UserProfile>({
         queryKey: ['users', 'me'],
         queryFn: async () => {
             const response = await api.get('/users/me');
             return response.data;
         },
-        enabled: !id
+        enabled: location.pathname === '/my-profile',
     });
 
-    const { data: ownerDetails } = useQuery<OwnerDetails>({
-        queryKey: ['users', id],
-        queryFn: async () => {
-            const response = await api.get(`/users/${id}`);
+    const getOwnerDetails = useMutation({
+        mutationFn: async (ownerId: string) => {
+            const response = await api.get(`/users/${ownerId}`);
             return response.data;
-        },
-        enabled: !!id
+        }
     })
 
     return {
         userData,
-        ownerDetails
+        getOwnerDetails
     }
 }

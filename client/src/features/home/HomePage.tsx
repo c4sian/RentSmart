@@ -1,70 +1,94 @@
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router";
+import { FormProvider, useForm, type Resolver } from "react-hook-form";
+import { filtersSchema, type FiltersSchema } from "../../lib/schemas/filtersSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import ControlledTextInput from "../../app/shared/components/ControlledTextInput";
+import ControlledDatePicker from "../../app/shared/components/ControlledDatePicker";
 import Search from "@mui/icons-material/Search";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { Link } from "react-router";
 
 export default function HomePage() {
+    const methods = useForm<FiltersSchema>({
+        mode: 'onSubmit',
+        resolver: zodResolver(filtersSchema) as Resolver<FiltersSchema>
+    });
+
+    const navigate = useNavigate();
+
+    const { handleSubmit } = methods;
+
+    const onSubmit = (data: FiltersSchema) => {
+        const params = new URLSearchParams();
+
+        if (data.destination) {
+            params.set("destination", data.destination);
+        }
+
+        if (data.checkIn) {
+            params.set("checkIn", format(data.checkIn, "yyyy-MM-dd"));
+        }
+
+        if (data.checkOut) {
+            params.set("checkOut", format(data.checkOut, "yyyy-MM-dd"));
+        }
+
+        const page = 1;
+        params.set("page", page.toString());
+
+        navigate(`/accommodations?${params.toString()}`);
+    }
 
     return (
-        <Box sx={{
-            display: "flex", flexDirection: "column",
-            justifyContent: "center", px: "2vw", minHeight: "calc(100vh - 4rem)"
-        }}>
-            <Box display={"flex"} flexDirection={"column"}
-                justifyContent={"space-around"} alignItems={"center"}
-                sx={{
-                    height: "75vh",
-                    backgroundImage: "url('home-photo3.jpg')",
-                    backgroundSize: "cover", backgroundPosition: "50% 53%", backgroundRepeat: "no-repeat",
-                    borderRadius: 5, boxShadow: 10
-                }} >
-                <Box maxWidth={"40%"}>
-                    <Typography variant="h2" color="primary" fontWeight={"600"} fontSize={"4.5vw"} align="center">Find your favorite place here!</Typography>
-                    <Typography color="primary" fontWeight={"400"} align="center">The best prices for over 2 million properties worldwide</Typography>
+        <Box sx={{ maxWidth: 1300, mx: "auto", mt: 2 }}>
+
+            <Stack sx={{
+                justifyContent: "space-around", alignItems: "center",
+                backgroundImage: "url('home-photo3.jpg')",
+                backgroundSize: "cover", backgroundPosition: "50% 47%",
+                height: 450,
+                borderRadius: 5, boxShadow: 15
+            }} >
+                <Box sx={{ maxWidth: "50%", color: "white" }}>
+                    <Typography variant="h1" fontSize={60} textAlign="center">
+                        Find your favorite place here!
+                    </Typography>
+                    <Typography variant="h6" fontSize={16} textAlign="center">
+                        The best prices for over 2 million properties worldwide
+                    </Typography>
                 </Box>
-                <Stack sx={{ bgcolor: "primary.main", borderRadius: 5, p: 2, gap: 2 }}>
-                    <Box display={"flex"} sx={{ gap: 2 }}>
+
+                <FormProvider {...methods}>
+                    <Box component={"form"} onSubmit={handleSubmit(onSubmit)}
+                        display={"flex"} sx={{ bgcolor: "white", borderRadius: 5, p: 2, gap: 2 }}>
                         <Box>
-                            <Typography variant="subtitle2">Location</Typography>
-                            <TextField
-                                placeholder="Type the destination" size="small"
-                                sx={{ "& .MuiOutlinedInput-notchedOutline": { borderRadius: 7 } }} />
+                            <Typography variant="subtitle2">Destination</Typography>
+                            <ControlledTextInput<FiltersSchema> name="destination" label="Type the destination"
+                                size="small" />
                         </Box>
                         <Box>
                             <Typography variant="subtitle2">Check-in</Typography>
-                            <TextField
-                                placeholder="Add date" size="small"
-                                sx={{ "& .MuiOutlinedInput-notchedOutline": { borderRadius: 7 } }} />
+                            <ControlledDatePicker<FiltersSchema> name="checkIn" label="Add date"
+                                slotProps={{ textField: { size: "small" } }} />
                         </Box>
                         <Box>
                             <Typography variant="subtitle2">Check-out</Typography>
-                            <TextField
-                                placeholder="Add date" size="small"
-                                sx={{ "& .MuiOutlinedInput-notchedOutline": { borderRadius: 7 } }} />
+                            <ControlledDatePicker<FiltersSchema> name="checkOut" label="Add date"
+                                slotProps={{ textField: { size: "small" } }}
+                            />
                         </Box>
                         <Box>
-                            <Typography variant="subtitle2">Guests</Typography>
-                            <TextField
-                                placeholder="Add guests" size="small"
-                                sx={{ "& .MuiOutlinedInput-notchedOutline": { borderRadius: 7 } }} />
+                            <Typography variant="subtitle2" color="transparent">Check-out</Typography>
+                            <Button type="submit" variant="contained" color="secondary"
+                                sx={{ alignSelf: "center" }}
+                            >
+                                <Search fontSize="small" />
+                                Search
+                            </Button>
                         </Box>
                     </Box>
-                    <Box display={"flex"} justifyContent={"space-between"}>
-                        <Button variant="contained" color="secondary"
-                            sx={{ borderRadius: 5, textTransform: "none" }}>
-                            Filters
-                            <FilterListIcon />
-                        </Button>
-                        <Button variant="contained" color="secondary" component={Link} to='accommodations'
-                            sx={{ borderRadius: 5, textTransform: "none" }}
-                        >
-                            <Search />
-                            Search Accommodation
-                        </Button>
-                    </Box>
-
-                </Stack>
-            </Box >
+                </FormProvider>
+            </Stack>
         </ Box >
     )
 }

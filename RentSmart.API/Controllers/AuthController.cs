@@ -55,34 +55,52 @@ namespace RentSmart.API.Controllers
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            var result = await authRepository.RefreshToken(refreshToken);
 
-            if (result.Value != null)
+            var result = await jwtService.RefreshJwtToken(refreshToken);
+            if (result == null)
             {
-                var loginResponseDto = result.Value;
-
-                var newRefreshToken = await jwtService.GenerateRefreshToken(loginResponseDto.UserId);
-
-                var cookieOptions = new CookieOptions
+                Response.Cookies.Append("refreshToken", "", new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = newRefreshToken.Expiration,
-                };
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(-1)
+                });
 
-                Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+                return BadRequest("Refresh token is invalid.");
             }
 
-            return HandleResult(result);
+            var loginResponseDto = result;
+
+            var newRefreshToken = await jwtService.GenerateRefreshToken(loginResponseDto.UserId);
+
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = newRefreshToken.Expiration,
+            });
+
+            return Ok(result);
         }
 
-        //[HttpPost("logout")]
-        //public async Task<IActionResult> LogoutUser()
-        //{
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogoutUser()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
 
+            await jwtService.RevokeRefreshToken(refreshToken);
 
-        //    return NoContent();
-        //}
+            Response.Cookies.Append("refreshToken", "", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(-1)
+            });
+
+            return Ok();
+        }
     }
 }

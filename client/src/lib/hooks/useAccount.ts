@@ -4,11 +4,12 @@ import api from "../api/api";
 import { useNavigate } from "react-router";
 import type { LoginSchema } from "../schemas/loginSchema";
 import { queryClient } from "../api/queryClient";
+import { toast } from "react-toastify";
 
 export const useAccount = () => {
     const navigate = useNavigate();
 
-    const { data: user } = useQuery<LoginResponse>({
+    const { data: user, isLoading: loadingUserInfo } = useQuery<LoginResponse>({
         queryKey: ['user'],
         queryFn: async () => {
             const response = await api.post('/auth/refresh-token', {}, {
@@ -16,6 +17,7 @@ export const useAccount = () => {
             });
             return response.data;
         },
+        retry: false,
         staleTime: Infinity
     });
 
@@ -24,6 +26,7 @@ export const useAccount = () => {
             await api.post('/auth/register', creds);
         },
         onSuccess: () => {
+            toast.success("Register successful. Now you can sign in.")
             navigate('/login');
         }
     });
@@ -35,13 +38,28 @@ export const useAccount = () => {
         },
         onSuccess: (userData) => {
             queryClient.setQueryData(['user'], userData);
-            navigate('/accommodations');
+            toast.success("Login successful.");
+            navigate('/');
+        }
+    });
+
+    const logoutUser = useMutation({
+        mutationFn: async () => {
+            await api.post('/auth/logout', {}, {
+                withCredentials: true
+            });
+        },
+        onSuccess: () => {
+            queryClient.removeQueries({ queryKey: ['user'] });
+            navigate('/');
         }
     });
 
     return {
         registerUser,
         loginUser,
+        logoutUser,
         user,
+        loadingUserInfo
     }
 }

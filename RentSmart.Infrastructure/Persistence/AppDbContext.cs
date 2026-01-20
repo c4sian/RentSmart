@@ -37,8 +37,24 @@ namespace RentSmart.Infrastructure.Persistence
             builder.Entity<Accommodation>().Property(p => p.AverageRating)
                 .HasColumnType("decimal(3,2)");
 
-            builder.Entity<Review>().HasIndex(i => i.BookingId)
+            builder.Entity<Review>().HasIndex(r => r.BookingId)
                 .IsUnique();
+
+            // Indexes
+
+            builder.Entity<Accommodation>()
+                .HasIndex(a => a.PricePerNight);
+
+            builder.Entity<Accommodation>()
+                .HasIndex(a => a.AverageRating);
+
+            builder.Entity<Accommodation>()
+                .HasIndex(a => a.Type);
+
+            builder.Entity<Booking>()
+                .HasIndex(b => new { b.AccommodationId, b.CheckInDate, b.CheckOutDate });
+
+            // Relationships
 
             builder.Entity<Accommodation>()
                 .HasMany(x => x.Images)
@@ -59,6 +75,8 @@ namespace RentSmart.Infrastructure.Persistence
                 .HasMany(x => x.Reviews)
                 .WithOne(x => x.Accommodation)
                 .HasForeignKey(x => x.AccommodationId);
+
+            // Intermediary tables
 
             builder.Entity<ListedAccommodation>()
                 .HasKey(x => new { x.UserId, x.AccommodationId });

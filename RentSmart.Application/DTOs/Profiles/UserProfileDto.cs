@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentSmart.Application.DTOs.Users
+namespace RentSmart.Application.DTOs.Profiles
 {
     public class UserProfileDto
     {
@@ -15,6 +15,7 @@ namespace RentSmart.Application.DTOs.Users
         public string Email { get; set; } = "";
 
         public List<AccommodationShortDto> ListedAccommodations { get; set; } = [];
+        public List<AccommodationShortDto> FavoriteAccommodations { get; set; } = [];
         public List<UserBookingDto> UserBookings { get; set; } = [];
     }
 }

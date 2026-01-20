@@ -11,8 +11,8 @@ namespace RentSmart.Application.Interfaces
 {
     public interface IAccommodationsRepository
     {
-        Task<Result<List<AccommodationShortDto>>> GetAllAsync();
-        Task<Result<AccommodationFullDto>> GetByIdAsync(string id);
+        Task<Result<PagedAccommodationsDto>> GetAllAsync(AccommodationFiltersDto filters);
+        Task<Result<AccommodationFullDto>> GetByIdAsync(string accommodationId, string? userId);
         Task<Result<string>> CreateAsync(CreateAccommodationDto createAccommodationDto, string userId);
         Task<Result<Unit>> UpdateAsync(UpdateAccommodationDto updateAccommodationDto, ClaimsPrincipal user);
         Task<Result<Unit>> DeleteAsync(string id, ClaimsPrincipal user);

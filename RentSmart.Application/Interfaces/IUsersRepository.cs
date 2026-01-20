@@ -1,5 +1,5 @@
 ﻿using RentSmart.Application.Core;
-using RentSmart.Application.DTOs.Users;
+using RentSmart.Application.DTOs.Profiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;

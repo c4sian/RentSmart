@@ -73,14 +73,15 @@ namespace RentSmart.Infrastructure.Security
             return new TokenModel { Token = refreshToken.Token, Expiration = tokenValidity };
         }
 
-        public async Task<LoginResponseDto?> ValidateRefreshToken(string refreshToken)
+        public async Task<LoginResponseDto?> RefreshJwtToken(string? refreshToken)
         {
-            var token = await dbContext.RefreshTokens.Include(x => x.User).FirstOrDefaultAsync(x => x.Token == refreshToken);
+            if (string.IsNullOrWhiteSpace(refreshToken)) return null;
 
-            if (token == null || token.ExpiresAt < DateTime.UtcNow)
-            {
-                return null;
-            }
+            var rfToken = await dbContext.RefreshTokens
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Token == refreshToken);
+
+            if (rfToken == null || rfToken.ExpiresAt < DateTime.UtcNow) return null;
 
             var rowsAffected = await dbContext.Database.ExecuteSqlInterpolatedAsync($@"
                 UPDATE RefreshTokens
@@ -90,7 +91,7 @@ namespace RentSmart.Infrastructure.Security
 
             if (rowsAffected == 0) return null;
 
-            var user = token.User;
+            var user = rfToken.User;
             var roles = await userManager.GetRolesAsync(user);
 
             var jwtToken = CreateJwtToken(user.Id, user.Email!, roles.ToList());
@@ -108,6 +109,21 @@ namespace RentSmart.Infrastructure.Security
             };
 
             return loginResponseDto;
+        }
+
+        public async Task RevokeRefreshToken(string? refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken)) return;
+
+            var rfToken = await dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
+
+            if (rfToken == null || rfToken.ExpiresAt < DateTime.UtcNow) return;
+
+            await dbContext.Database.ExecuteSqlInterpolatedAsync($@"
+                UPDATE RefreshTokens
+                SET IsRevoked = 1, UsedAt = GETUTCDATE()
+                WHERE Token = {refreshToken} AND IsUsed = 0 AND IsRevoked = 0
+            ");
         }
     }
 }

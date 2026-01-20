@@ -17,7 +17,7 @@ export default function ControlledRatingInput<T extends FieldValues>({ name, ...
                     {...field}
                     {...props}
                     value={field.value || 0}
-                    onChange={(value) => field.onChange(value)}
+                    onChange={(_, value) => field.onChange(value)}
                 />
             )}
         />

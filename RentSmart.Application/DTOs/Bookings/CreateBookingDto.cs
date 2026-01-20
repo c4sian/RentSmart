@@ -8,7 +8,7 @@ namespace RentSmart.Application.DTOs.Bookings
 {
     public class CreateBookingDto
     {
-        public required string AccommodationId { get; set; }
+        public string AccommodationId { get; set; } = "";
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
     }

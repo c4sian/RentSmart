@@ -1,5 +1,7 @@
 import axios from "axios";
 import { queryClient } from "./queryClient";
+import { router } from "../../app/router/Routes";
+import { toast } from "react-toastify";
 
 const sleep = (delay: number) => {
     return new Promise(resolve => {
@@ -29,19 +31,41 @@ const onRefreshed = (token: string) => {
     refreshQueue = [];
 }
 
-api.interceptors.response.use(async (response) => {
-    try {
+api.interceptors.response.use(
+    async (response) => {
         await sleep(1000);
         return response;
-    } catch (error) {
-        console.log(error);
-        return Promise.reject(error);
-    }
-},
+    },
     async (error) => {
-        const { config, response } = error;
+        const { config, response: { status, data } } = error;
 
-        if (response?.status !== 401 || config._retry) {
+        if (status !== 401 || config._retry) {
+            switch (status) {
+                case 400:
+                    if (data.errors) {
+                        const modalStateErrors = [];
+                        for (const key in data.errors) {
+                            if (data.errors[key]) {
+                                modalStateErrors.push(data.errors[key]);
+                            }
+                        }
+                        throw modalStateErrors.flat();
+                    } else {
+                        if (data !== "Refresh token is invalid.") {
+                            toast.error(data);
+                        }
+                    }
+                    break;
+                case 404:
+                    router.navigate('/not-found');
+                    break;
+                case 500:
+                    router.navigate('/server-error', { state: { error: data } })
+                    break;
+                default:
+                    break;
+            }
+
             return Promise.reject(error);
         }
 

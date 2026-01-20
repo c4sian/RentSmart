@@ -1,12 +1,16 @@
 import { Box, Divider, Typography } from "@mui/material";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useAccommodations } from "../../../lib/hooks/useAccommodations";
+import AccommodationHeader from "./AccommodationHeader";
 import ImageGallery from "./ImageGallery";
 import AmenityList from "./AmenityList";
 import BookingForm from "./BookingForm";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Map from "./Map";
 import ReviewsSection from "./ReviewsSection";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PersonIcon from '@mui/icons-material/Person';
+import { queryClient } from "../../../lib/api/queryClient";
+
 
 export default function AccommodationPage() {
     const { id } = useParams();
@@ -14,16 +18,24 @@ export default function AccommodationPage() {
 
     if (!accommodation) return <Typography>Accommodation not found</Typography>
 
+    const user = queryClient.getQueryData(['user']);
+    const isLoggedIn = !!user;
+
     return (
         <Box sx={{
             maxWidth: 1300, mx: "auto",
             px: 2, py: 2, mt: 1,
             bgcolor: "white", borderRadius: 2
         }}>
-            <Typography variant="h1" fontSize={28}>{accommodation.title}</Typography>
-            <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                {accommodation.city}, {accommodation.stateOrCounty}, {accommodation.country}
-            </Typography>
+            <AccommodationHeader
+                id={accommodation.id}
+                title={accommodation.title}
+                country={accommodation.country}
+                stateOrCounty={accommodation.stateOrCounty}
+                city={accommodation.city}
+                isFavorite={accommodation.isFavorite}
+                isLoggedIn={isLoggedIn}
+            />
 
             <ImageGallery images={accommodation.images} />
 
@@ -47,41 +59,22 @@ export default function AccommodationPage() {
                         <Typography variant="h2" fontSize={24}>House Rules</Typography>
 
                         <Box sx={{
-                            display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "1fr 1fr" },
-                            mt: 1
+                            display: "grid", gridTemplateColumns: { md: "1fr 1fr 1fr" },
+                            gap: 4, mt: 1
                         }}>
-                            <Box sx={{ display: "flex", gap: 2 }}>
+                            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                                 <AccessTimeIcon />
                                 <Typography>Check in after: {accommodation.checkIn}</Typography>
                             </Box>
-                            <Box sx={{ display: "flex", gap: 2 }}>
+                            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                                 <AccessTimeIcon />
                                 <Typography>Check out before: {accommodation.checkOut}</Typography>
                             </Box>
-                        </Box>
-                    </Box>
-
-                    <Divider sx={{ backgroundColor: "grey.100" }} />
-
-                    <Box sx={{ my: 3 }}>
-                        <Typography variant="h2" fontSize={24}>Policies</Typography>
-
-                        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "1fr 1fr" }, mt: 1 }}>
-                            <Box>
-                                <Typography variant="h3" fontSize={20} color="secondary">Cancellation Policy</Typography>
-                                <Typography sx={{ mt: 1 }}>Bookings at this property are non-refundable.</Typography>
+                            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                                <PersonIcon />
+                                <Typography>Max guests: {accommodation.guestsNumber}</Typography>
                             </Box>
-                            <Box>
-                                <Typography sx={{ mb: 1 }}>If you have upcoming trips, you can manage or cancel your booking in your traveler account.</Typography>
-                                <Typography component={Link} to={`/profile`}
-                                    variant="h4" fontSize={18} color="secondary"
-                                >
-                                    View upcoming trip
-                                </Typography>
-                            </Box>
-
                         </Box>
-
                     </Box>
 
                     <Divider sx={{ backgroundColor: "grey.100" }} />
@@ -111,7 +104,10 @@ export default function AccommodationPage() {
                     <BookingForm
                         accommodationId={accommodation.id}
                         accommodationPrice={accommodation.pricePerNight}
+                        averageRating={accommodation.averageRating}
+                        reviewsCount={accommodation.reviewsCount}
                         ownerId={accommodation.ownerId}
+                        isLoggedIn={isLoggedIn}
                     />
                 </Box>
 

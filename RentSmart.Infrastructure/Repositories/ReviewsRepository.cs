@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RentSmart.Application.Core;
 using RentSmart.Application.DTOs.Reviews;
-using RentSmart.Application.DTOs.Users;
+using RentSmart.Application.DTOs.Profiles;
 using RentSmart.Application.Interfaces;
 using RentSmart.Domain;
 using RentSmart.Infrastructure.Persistence;
@@ -10,6 +10,7 @@ using RentSmart.Infrastructure.Persistence.IntermediaryTables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -71,6 +72,9 @@ namespace RentSmart.Infrastructure.Repositories
 
         public async Task<Result<Unit>> CreateAsync(CreateReviewDto createReviewDto, string userId)
         {
+            var existingReview = await dbContext.Reviews.FirstOrDefaultAsync(x => x.BookingId == createReviewDto.BookingId);
+            if (existingReview != null) return Result<Unit>.Failure("There is already a review for this booking.", 404);
+
             var review = mapper.Map<Review>(createReviewDto);
 
             review.UserId = userId;
@@ -84,7 +88,8 @@ namespace RentSmart.Infrastructure.Repositories
             };
             await dbContext.UserReviews.AddAsync(userReview);
 
-            var accommodation = review.Accommodation;
+            var accommodation = await dbContext.Accommodations.FirstOrDefaultAsync(x => x.Id == review.AccommodationId);
+            if (accommodation == null) return Result<Unit>.Failure("Accommodation not found.", 404);
             accommodation.AverageRating =
                 (accommodation.AverageRating * accommodation.ReviewsCount + review.Rating)
                 / (accommodation.ReviewsCount + 1);

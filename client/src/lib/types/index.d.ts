@@ -15,7 +15,13 @@ type AccommodationShortData = {
     street: string
     type: string
     pricePerNight: number
-}
+    averageRating: number
+};
+
+type PagedResponse = {
+    accommodations: AccommodationShortData[]
+    totalCount: number
+};
 
 type AccommodationFullData = {
     id: string
@@ -33,9 +39,13 @@ type AccommodationFullData = {
     pricePerNight: number
     checkIn: string
     checkOut: string
-    ownerId: string
     images: Image[]
     amenityIds: number[]
+    ownerId: string
+    averageRating: number
+    reviewsCount: number
+    isFavorite: boolean
+    dateCreated: Date
 };
 
 type Image = {
@@ -59,7 +69,7 @@ type AccommodationReview = {
 
 type ReviewEligibility = {
     canReview: boolean
-    bookindId: string
+    bookingId: string
 };
 
 type UserProfile = {

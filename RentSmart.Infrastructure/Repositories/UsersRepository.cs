@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RentSmart.Application.Core;
 using RentSmart.Application.DTOs.Accommodations;
 using RentSmart.Application.DTOs.Bookings;
-using RentSmart.Application.DTOs.Users;
+using RentSmart.Application.DTOs.Profiles;
 using RentSmart.Application.Interfaces;
 using RentSmart.Infrastructure.Identity;
 using RentSmart.Infrastructure.Persistence;
@@ -28,6 +28,11 @@ namespace RentSmart.Infrastructure.Repositories
                 .Select(x => x.Accommodation)
                 .ToListAsync();
 
+            var favoriteAccommodations = await dbContext.FavoriteAccommodations
+                .Where(x => x.UserId == userId)
+                .Select(x => x.Accommodation)
+                .ToListAsync();
+
             var userBookings = await dbContext.UserBookings
                 .Where(x => x.UserId == userId)
                 .Select(x => x.Booking)
@@ -40,6 +45,7 @@ namespace RentSmart.Infrastructure.Repositories
                 Email = appUser.Email!,
 
                 ListedAccommodations = mapper.Map<List<AccommodationShortDto>>(listedAccommodations),
+                FavoriteAccommodations = mapper.Map<List<AccommodationShortDto>>(favoriteAccommodations),
                 UserBookings = mapper.Map<List<UserBookingDto>>(userBookings)
             };
 

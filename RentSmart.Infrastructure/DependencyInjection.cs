@@ -31,6 +31,7 @@ namespace RentSmart.Infrastructure
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IBookingsRepository, BookingsRepository>();
             services.AddScoped<IReviewsRepository, ReviewsRepository>();
+            services.AddScoped<IFavoritesRepository, FavoritesRepository>();
 
             services.AddHttpClient<IGeocodingService, GeocodingService>();
 

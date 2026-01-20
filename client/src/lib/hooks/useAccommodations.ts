@@ -4,17 +4,19 @@ import type { FieldValues } from "react-hook-form";
 import { queryClient } from "../api/queryClient";
 import { useLocation } from "react-router";
 
-export const useAccommodations = (id?: string) => {
+export const useAccommodations = (id?: string, filters?: FieldValues) => {
     const location = useLocation();
 
-    const { data: accommodations, isPending } = useQuery({
-        queryKey: ['accommodations'],
+    const { data: pagedAccommodations, isLoading: loadingAccommodations } = useQuery({
+        queryKey: ['accommodations', filters],
         queryFn: async () => {
-            const response = (await api.get<AccommodationShortData[]>('/accommodations'));
+            const response = await api.get<PagedResponse>('/accommodations', {
+                params: filters
+            });
             return response.data;
         },
-        initialData: [],
-        enabled: location.pathname === "/accommodations"
+        initialData: { accommodations: [], totalCount: 0 },
+        enabled: location.pathname === '/accommodations',
     });
 
     const { data: accommodation } = useQuery({
@@ -50,8 +52,8 @@ export const useAccommodations = (id?: string) => {
     });
 
     return {
-        accommodations,
-        isPending,
+        pagedAccommodations,
+        loadingAccommodations,
         accommodation,
         createAccommodation,
         updateAccommodation

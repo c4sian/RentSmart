@@ -10,14 +10,8 @@ namespace RentSmart.Application.DTOs.Auth
 {
     public class RegisterRequestDto
     {
-        [Required]
-        public required string DisplayName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public required string Email { get; set; } 
-
-        [Required]
-        public required string Password { get; set; } 
+        public string DisplayName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
     }
 }

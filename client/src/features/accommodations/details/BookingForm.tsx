@@ -9,14 +9,18 @@ import { differenceInCalendarDays } from "date-fns";
 import { useBookings } from "../../../lib/hooks/useBookings";
 import { useProfile } from "../../../lib/hooks/useProfile";
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 
 type Props = {
     accommodationId: string
     accommodationPrice: number
+    averageRating: number
+    reviewsCount: number
     ownerId: string
+    isLoggedIn: boolean
 };
 
-export default function BookingForm({ accommodationId, accommodationPrice, ownerId }: Props) {
+export default function BookingForm({ accommodationId, accommodationPrice, averageRating, reviewsCount, ownerId, isLoggedIn }: Props) {
     const methods = useForm<BookingSchema>({
         mode: "onSubmit",
         resolver: zodResolver(bookingSchema) as Resolver<BookingSchema>,
@@ -24,8 +28,22 @@ export default function BookingForm({ accommodationId, accommodationPrice, owner
 
     const { handleSubmit, control } = methods;
 
-    const { ownerDetails } = useProfile(ownerId);
+    const { getOwnerDetails } = useProfile();
+
     const [showOwner, setShowOwner] = useState(false);
+    const [ownerDetails, setOwnerDetails] = useState<OwnerDetails | undefined>(undefined);
+
+    const handleContactOwner = async () => {
+        setShowOwner(true);
+
+        if (isLoggedIn) {
+            await getOwnerDetails.mutateAsync(ownerId, {
+                onSuccess: (data: OwnerDetails) => {
+                    setOwnerDetails(data);
+                }
+            });
+        }
+    }
 
     const { bookedDates, createBooking } = useBookings(accommodationId);
 
@@ -65,16 +83,18 @@ export default function BookingForm({ accommodationId, accommodationPrice, owner
     return (
         <Box sx={{ border: "1px solid", borderColor: "grey.300", borderRadius: 3, p: 2 }}>
 
-            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                <Box sx={{ display: "flex" }}>
-                    <Typography variant="h2" fontSize={26} pr={1}>$ {accommodationPrice}</Typography>
-                    <Typography alignContent={"end"} fontSize={12} color="grey.600">/ night</Typography>
+            <Box display={"flex"} justifyContent="space-between">
+
+                <Box display={"flex"}>
+                    <Typography variant="h3" fontSize={26}>${accommodationPrice}</Typography>
+                    <Typography fontSize={12} color="grey.800" alignSelf={"end"}>/ night</Typography>
                 </Box>
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <StarIcon sx={{ color: "orange", mb: 0.5 }} />
-                    <Typography alignContent={"center"} fontSize={14} color="grey.600" > 4.9 (1.283)</Typography>
+                <Box display={"flex"} sx={{ alignItems: "center", gap: 0.5 }}>
+                    <StarIcon sx={{ color: "orange" }} />
+                    <Typography fontSize={14} color="grey.800">{averageRating.toFixed(1)} ({reviewsCount})</Typography>
                 </Box>
+
             </Box>
 
             <FormProvider {...methods}>
@@ -110,7 +130,7 @@ export default function BookingForm({ accommodationId, accommodationPrice, owner
                     {!showOwner &&
                         <Button
                             variant="text" color="secondary"
-                            onClick={() => { setShowOwner(true) }}
+                            onClick={handleContactOwner}
                         >
                             Click to contact owner
                         </Button>
@@ -126,7 +146,12 @@ export default function BookingForm({ accommodationId, accommodationPrice, owner
                         </Box>
                     </Box>
                 ) : (
-                    <Typography>You need to be signed in to contact owner.</Typography>
+                    <Stack alignItems={"center"} sx={{ mt: 1 }}>
+                        <Typography fontSize={14}>
+                            You need to be signed in to contact owner.
+                        </Typography>
+                        <Typography component={Link} to='/login' color="secondary" fontSize={14}>Sign In</Typography>
+                    </Stack>
                 ))}
             </Box>
         </Box>

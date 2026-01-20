@@ -36,6 +36,9 @@ namespace RentSmart.Application.DTOs.Accommodations
         public List<int> AmenityIds { get; set; } = [];
 
         public string OwnerId { get; set; } = "";
+        public decimal AverageRating { get; set; }
+        public int ReviewsCount { get; set; }
+        public bool IsFavorite { get; set; } = false;
         public DateTime DateCreated { get; set; }
     }
 }

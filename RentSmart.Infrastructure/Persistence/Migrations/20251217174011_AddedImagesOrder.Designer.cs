@@ -473,7 +473,7 @@ namespace RentSmart.Infrastructure.Migrations
                     b.ToTable("UserReviews");
                 });
 
-            modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshToken", b =>
+            modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshJwtToken", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -680,7 +680,7 @@ namespace RentSmart.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshToken", b =>
+            modelBuilder.Entity("RentSmart.Infrastructure.Security.RefreshJwtToken", b =>
                 {
                     b.HasOne("RentSmart.Infrastructure.Identity.AppUser", "User")
                         .WithMany()

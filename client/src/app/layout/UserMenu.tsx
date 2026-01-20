@@ -1,7 +1,8 @@
 import { Avatar, Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
-import { Logout, Person } from '@mui/icons-material';
+import { Logout, Person, Apartment } from '@mui/icons-material';
 import { Link } from "react-router";
+import { useAccount } from "../../lib/hooks/useAccount";
 
 type Props = {
     user: LoginResponse
@@ -15,6 +16,11 @@ export default function UserMenu({ user }: Props) {
 
     const handleClose = () => setAnchorEl(null);
 
+    const { logoutUser } = useAccount();
+    const handleLogout = async () => {
+        await logoutUser.mutateAsync();
+    }
+
     return (
         <>
             <Button onClick={handleClick}>
@@ -25,14 +31,21 @@ export default function UserMenu({ user }: Props) {
             </Button>
 
             <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
-                <MenuItem component={Link} to={`/profile/${user.userId}`} onClick={handleClose}>
+                <MenuItem component={Link} to={'my-profile'} onClick={handleClose}>
                     <ListItemIcon>
                         <Person />
                     </ListItemIcon>
                     <ListItemText>My profile</ListItemText>
                 </MenuItem>
 
-                <MenuItem >
+                <MenuItem component={Link} to={'/create-accommodation'} onClick={handleClose}>
+                    <ListItemIcon>
+                        <Apartment />
+                    </ListItemIcon>
+                    <ListItemText>Register property</ListItemText>
+                </MenuItem>
+
+                <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout />
                     </ListItemIcon>

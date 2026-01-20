@@ -9,7 +9,8 @@ export const useReviews = (accommodationId?: string) => {
         queryFn: async () => {
             const response = await api.get(`/reviews/accommodation/${accommodationId}`);
             return response.data;
-        }
+        },
+        initialData: [],
     });
 
     const { data: reviewEligibility } = useQuery<ReviewEligibility>({
@@ -17,7 +18,9 @@ export const useReviews = (accommodationId?: string) => {
         queryFn: async () => {
             const response = await api.get(`/reviews/eligibility/${accommodationId}`);
             return response.data;
-        }
+        },
+        retry: false,
+        initialData: { canReview: false, bookingId: '' },
     });
 
     const createReview = useMutation({

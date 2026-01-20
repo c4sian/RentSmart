@@ -21,32 +21,32 @@ namespace RentSmart.Infrastructure.Repositories
     public class AuthRepository(UserManager<AppUser> userManager, IJwtService jwtService) 
         : IAuthRepository
     {
-        public async Task<Result<string>> RegisterUser(RegisterRequestDto registerDto)
+        public async Task<Result<Unit>> RegisterUser(RegisterRequestDto registerDto)
         {
-            var user = new AppUser
+            var appUser = new AppUser
             {
                 UserName = registerDto.Email,
                 Email = registerDto.Email,
                 DisplayName = registerDto.DisplayName,
             };
 
-            var identityResult = await userManager.CreateAsync(user, registerDto.Password);
+            var identityResult = await userManager.CreateAsync(appUser, registerDto.Password);
 
             if (identityResult.Succeeded)
             {
-                var roleResult = await userManager.AddToRoleAsync(user, "User");
+                var roleResult = await userManager.AddToRoleAsync(appUser, "User");
 
-                if (roleResult.Succeeded) return Result<string>.Success("User successfully registered.");
+                if (roleResult.Succeeded) return Result<Unit>.Success(Unit.Value);
             }
 
-            return Result<string>.Failure("Something went wrong while registering the user.", 400);
+            return Result<Unit>.Failure("Something went wrong while registering the user.", 400);
         }
 
         public async Task<Result<LoginResponseDto>> LoginUser(LoginRequestDto loginRequestDto)
         {
             var user = await userManager.FindByEmailAsync(loginRequestDto.Email);
 
-            if (user == null) return Result<LoginResponseDto>.Failure("Incorrect email or password.", 400);
+            if (user == null) return Result<LoginResponseDto>.Failure("Incorrect email.", 400);
 
             var checkPasswordResult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
@@ -67,18 +67,6 @@ namespace RentSmart.Infrastructure.Repositories
 
                 Roles = roles.ToList()
             };
-
-            return Result<LoginResponseDto>.Success(loginResponseDto);
-        }
-
-        public async Task<Result<LoginResponseDto>> RefreshToken(string? refreshToken)
-        {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-                return Result<LoginResponseDto>.Failure("Token is invalid.", 400);
-
-            var loginResponseDto = await jwtService.ValidateRefreshToken(refreshToken);
-
-            if (loginResponseDto == null) return Result<LoginResponseDto>.Failure("Refresh token is not valid.", 401);
 
             return Result<LoginResponseDto>.Success(loginResponseDto);
         }

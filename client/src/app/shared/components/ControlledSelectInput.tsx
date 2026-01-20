@@ -18,10 +18,11 @@ export default function ControlledSelectInput<T extends FieldValues>({ name, lab
                 <FormControl fullWidth error={!!error}>
                     <InputLabel sx={{ "&.Mui-focused": { color: "grey.700" } }}>{label}</InputLabel>
                     <Select
-                        {...props}
                         value={field.value || ''}
-                        label={label}
                         onChange={field.onChange}
+
+                        {...props}
+                        label={label}
                         sx={{
                             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "grey.900" }
                         }}

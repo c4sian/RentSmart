@@ -19,7 +19,7 @@ export default function NavBar() {
                     <Typography>
                         Best Rated
                     </Typography>
-                    <Typography component={NavLink} to={'/createAccommodation'}>
+                    <Typography >
                         About Us
                     </Typography>
                 </Box>

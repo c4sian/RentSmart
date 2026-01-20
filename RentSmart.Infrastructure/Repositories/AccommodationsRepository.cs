@@ -23,24 +23,75 @@ namespace RentSmart.Infrastructure.Repositories
     public class AccommodationsRepository(AppDbContext dbContext, IMapper mapper, 
         IAuthorizationService authorizationService, IGeocodingService geocodingService) : IAccommodationsRepository
     {
-        public async Task<Result<List<AccommodationShortDto>>> GetAllAsync()
+        public async Task<Result<PagedAccommodationsDto>> GetAllAsync(AccommodationFiltersDto filters)
         {
-            var accommodations = await dbContext.Accommodations.ToListAsync();
+            var query = dbContext.Accommodations.AsQueryable();
 
-            return Result<List<AccommodationShortDto>>.Success(
-                mapper.Map<List<AccommodationShortDto>>(accommodations));
+            if(!string.IsNullOrWhiteSpace(filters.Destination))
+            {
+                query = query.Where(a =>
+                    a.City.Contains(filters.Destination) ||
+                    a.Country.Contains(filters.Destination));
+            }
+
+            if (filters.CheckIn.HasValue && filters.CheckOut.HasValue)
+            {
+                query = query.Where(a =>
+                    !a.Bookings.Any(b =>
+                        b.CheckInDate < filters.CheckOut &&
+                        b.CheckOutDate > filters.CheckIn));
+            }
+
+            if (filters.MaxPrice.HasValue)
+            {
+                query = query.Where(a => a.PricePerNight <= filters.MaxPrice.Value);
+            }
+
+            if(filters.MinRating.HasValue)
+            {
+                query = query.Where(a => a.AverageRating >= filters.MinRating.Value);
+            }
+
+            if(!string.IsNullOrWhiteSpace(filters.Type))
+            {
+                query = query.Where(a => a.Type.Contains(filters.Type));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var accommodations = await query
+                .Skip((filters.Page - 1) * filters.PageSize)
+                .Take(filters.PageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var accommodationsDto = mapper.Map<List<AccommodationShortDto>>(accommodations);
+
+            return Result<PagedAccommodationsDto>.Success(new PagedAccommodationsDto
+            {
+                Accommodations = accommodationsDto,
+                TotalCount = totalCount
+            });
         }
 
-        public async Task<Result<AccommodationFullDto>> GetByIdAsync(string id)
+        public async Task<Result<AccommodationFullDto>> GetByIdAsync(string accommodationId, string? userId)
         {
             var accommodation = await dbContext.Accommodations
                 .Include(x => x.Images)
                 .Include(x => x.Amenities)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == accommodationId);
 
             if (accommodation == null) return Result<AccommodationFullDto>.Failure("Accommodation not found.", 404);
 
             var accommodationFullDto = mapper.Map<AccommodationFullDto>(accommodation);
+
+            if (userId != null)
+            {
+                var isFavorite = await dbContext.FavoriteAccommodations
+                    .FirstOrDefaultAsync(x => x.UserId == userId && x.AccommodationId == accommodationId);
+
+                if (isFavorite != null) accommodationFullDto.IsFavorite = true;
+            }
 
             return Result<AccommodationFullDto>.Success(accommodationFullDto);
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentSmart.Application.DTOs.Users
+namespace RentSmart.Application.DTOs.Profiles
 {
     public class OwnerDto
     {

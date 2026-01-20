@@ -11,8 +11,7 @@ namespace RentSmart.Application.Interfaces
 {
     public interface IAuthRepository
     {
-        Task<Result<string>> RegisterUser(RegisterRequestDto registerDto);
+        Task<Result<Unit>> RegisterUser(RegisterRequestDto registerDto);
         Task<Result<LoginResponseDto>> LoginUser(LoginRequestDto loginRequestDto);
-        Task<Result<LoginResponseDto>> RefreshToken(string? refreshToken);
     }
 }

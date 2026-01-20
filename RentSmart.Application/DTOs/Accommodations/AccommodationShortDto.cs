@@ -17,5 +17,7 @@ namespace RentSmart.Application.DTOs.Accommodations
 
         public string Type { get; set; } = "";
         public decimal PricePerNight { get; set; }
+
+        public decimal AverageRating { get; set; }
     }
 }

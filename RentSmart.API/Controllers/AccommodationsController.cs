@@ -13,16 +13,18 @@ namespace RentSmart.API.Controllers
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAccommodations()
+        public async Task<IActionResult> GetAccommodations([FromQuery] AccommodationFiltersDto filters)
         {
-            return HandleResult(await accommodationsRepository.GetAllAsync());
+            return HandleResult(await accommodationsRepository.GetAllAsync(filters));
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAccommodationDetails([FromRoute] string id)
         {
-            return HandleResult(await accommodationsRepository.GetByIdAsync(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return HandleResult(await accommodationsRepository.GetByIdAsync(id, userId));
         }
 
         [HttpPost]
