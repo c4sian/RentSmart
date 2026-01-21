@@ -3,12 +3,6 @@ import { queryClient } from "./queryClient";
 import { router } from "../../app/router/Routes";
 import { toast } from "react-toastify";
 
-const sleep = (delay: number) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, delay)
-    });
-}
-
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL
 });
@@ -33,7 +27,6 @@ const onRefreshed = (token: string) => {
 
 api.interceptors.response.use(
     async (response) => {
-        await sleep(1000);
         return response;
     },
     async (error) => {

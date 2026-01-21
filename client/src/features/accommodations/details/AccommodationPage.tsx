@@ -11,10 +11,11 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PersonIcon from '@mui/icons-material/Person';
 import { queryClient } from "../../../lib/api/queryClient";
 
-
 export default function AccommodationPage() {
     const { id } = useParams();
-    const { accommodation } = useAccommodations(id);
+    const { accommodation, loadingAccommodationDetails } = useAccommodations(id);
+
+    if (loadingAccommodationDetails) return <Typography>Loading...</Typography>
 
     if (!accommodation) return <Typography>Accommodation not found</Typography>
 

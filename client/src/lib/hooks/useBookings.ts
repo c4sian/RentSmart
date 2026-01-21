@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { FieldValues } from "react-hook-form"
 import api from "../api/api";
+import { queryClient } from "../api/queryClient";
 
 export const useBookings = (accommodationId?: string) => {
     const { data: bookedDates } = useQuery<BookedDates[]>({
@@ -22,6 +23,9 @@ export const useBookings = (accommodationId?: string) => {
     const cancelBooking = useMutation({
         mutationFn: async (id: string) => {
             await api.delete(`/bookings/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users', "me"] });
         }
     })
 

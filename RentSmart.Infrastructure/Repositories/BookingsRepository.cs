@@ -38,6 +38,13 @@ namespace RentSmart.Infrastructure.Repositories
             booking.UserId = userId;
             booking.Status = "Confirmed";
 
+            var isValidBooking = await dbContext.Bookings.AnyAsync(b =>
+                b.AccommodationId == createBookingDto.AccommodationId &&
+                b.CheckInDate < createBookingDto.CheckOutDate &&
+                b.CheckOutDate > createBookingDto.CheckInDate);
+
+            if (!isValidBooking) return Result<Unit>.Failure("Accommodation not available for selected dates.", 400);
+
             await dbContext.Bookings.AddAsync(booking);
 
             var userBooking = new UserBooking

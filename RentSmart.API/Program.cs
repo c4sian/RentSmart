@@ -63,6 +63,7 @@ namespace RentSmart.API
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -88,18 +89,22 @@ namespace RentSmart.API
                 });
             });
             builder.Services.AddTransient<IAuthorizationHandler, IsOwnerHandler>();
-            //builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+            builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             app.UseCors("AllowFrontend");
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.MapControllers();
+            app.MapFallbackToController("Index", "Fallback");
 
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;

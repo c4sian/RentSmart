@@ -31,7 +31,7 @@ export default function AccommodationImages() {
     const handleConfirm = async () => {
         await reorderImages.mutateAsync(images, {
             onSuccess: () => {
-                navigate(`/profile/${id}`);
+                navigate(`/my-profile`);
             },
             onError: (error) => {
                 console.log(error);

@@ -1,4 +1,4 @@
-import { Box, Pagination } from "@mui/material";
+import { Box, Pagination, Typography } from "@mui/material";
 import { useAccommodations } from "../../../lib/hooks/useAccommodations";
 import AccommodationCard from "./AccommodationCard";
 import { useNavigate, useSearchParams } from "react-router";
@@ -28,7 +28,9 @@ export default function AccommodationsView() {
         page
     };
 
-    const { pagedAccommodations } = useAccommodations(undefined, filters);
+    const { pagedAccommodations, loadingAccommodations } = useAccommodations(undefined, filters);
+    if (loadingAccommodations) return <Typography>Loading...</Typography>
+
     const accommodations = pagedAccommodations.accommodations;
 
     const pageCount = Math.ceil(pagedAccommodations.totalCount / 5);

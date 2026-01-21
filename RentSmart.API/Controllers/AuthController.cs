@@ -40,7 +40,7 @@ namespace RentSmart.API.Controllers
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.Strict,
+                    SameSite = SameSiteMode.None,
                     Expires = refreshToken.Expiration,
                 };
 
@@ -78,7 +78,7 @@ namespace RentSmart.API.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = newRefreshToken.Expiration,
             });
 
@@ -96,7 +96,7 @@ namespace RentSmart.API.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(-1)
             });
 

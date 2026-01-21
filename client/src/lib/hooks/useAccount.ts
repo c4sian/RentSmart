@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 export const useAccount = () => {
     const navigate = useNavigate();
 
-    const { data: user, isLoading: loadingUserInfo } = useQuery<LoginResponse>({
+    const { data: user, isLoading: loadingUserAccount } = useQuery<LoginResponse>({
         queryKey: ['user'],
         queryFn: async () => {
             const response = await api.post('/auth/refresh-token', {}, {
@@ -33,7 +33,9 @@ export const useAccount = () => {
 
     const loginUser = useMutation({
         mutationFn: async (creds: LoginSchema): Promise<LoginResponse> => {
-            const response = await api.post('/auth/login', creds);
+            const response = await api.post('/auth/login', creds, {
+                withCredentials: true
+            });
             return response.data;
         },
         onSuccess: (userData) => {
@@ -60,6 +62,6 @@ export const useAccount = () => {
         loginUser,
         logoutUser,
         user,
-        loadingUserInfo
+        loadingUserAccount
     }
 }

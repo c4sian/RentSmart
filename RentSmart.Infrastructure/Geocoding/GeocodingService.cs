@@ -34,12 +34,14 @@ namespace RentSmart.Infrastructure.Geocoding
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
 
-            var data = await response.Content.ReadFromJsonAsync<NominatimResult>();
+            var data = await response.Content.ReadFromJsonAsync<List<NominatimResult>>();
 
-            if (data == null) return null;
+            if (data == null || data.Count == 0) return null;
 
-            double.TryParse(data.lat, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat);
-            double.TryParse(data.lon, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon);
+            var location = data.FirstOrDefault();
+
+            double.TryParse(location!.lat, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat);
+            double.TryParse(location.lon, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon);
 
             return new CoordinatesDto
             {

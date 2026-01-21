@@ -7,6 +7,11 @@ type LoginResponse = {
     roles: string[]
 };
 
+type PagedResponse = {
+    accommodations: AccommodationShortData[]
+    totalCount: number
+};
+
 type AccommodationShortData = {
     id: string
     title: string
@@ -16,11 +21,6 @@ type AccommodationShortData = {
     type: string
     pricePerNight: number
     averageRating: number
-};
-
-type PagedResponse = {
-    accommodations: AccommodationShortData[]
-    totalCount: number
 };
 
 type AccommodationFullData = {
@@ -59,6 +59,17 @@ type BookedDates = {
     checkOutDate: Date
 };
 
+type OwnerDetails = {
+    displayName: string
+    imageUrl?: string
+    email: string
+};
+
+type ReviewEligibility = {
+    canReview: boolean
+    bookingId: string
+};
+
 type AccommodationReview = {
     id: string
     rating: number
@@ -67,26 +78,25 @@ type AccommodationReview = {
     reviewer: ReviewerDetails
 };
 
-type ReviewEligibility = {
-    canReview: boolean
-    bookingId: string
+type ReviewerDetails = {
+    id: string
+    displayName: string
+    imageUrl?: string
 };
 
 type UserProfile = {
     userId: string
     displayName: string
     email: string
-    listedAccommodations: Accommodation[]
+    listedAccommodations: AccommodationShortData[]
+    favoriteAccommodations: AccommodationShortData[]
+    userBookings: UserBooking[]
 };
 
-type OwnerDetails = {
-    displayName: string
-    imageUrl?: string
-    email: string
-};
-
-type ReviewerDetails = {
+type UserBooking = {
     id: string
-    displayName: string
-    imageUrl?: string
-}
+    checkInDate: Date
+    checkOutDate: Date
+    status: string
+    accommodation: AccommodationShortData
+};

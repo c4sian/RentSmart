@@ -19,7 +19,7 @@ export const useAccommodations = (id?: string, filters?: FieldValues) => {
         enabled: location.pathname === '/accommodations',
     });
 
-    const { data: accommodation } = useQuery({
+    const { data: accommodation, isLoading: loadingAccommodationDetails } = useQuery({
         queryKey: ['accommodations', id],
         queryFn: async () => {
             const response = await api.get<AccommodationFullData>(`/accommodations/${id}`);
@@ -55,6 +55,7 @@ export const useAccommodations = (id?: string, filters?: FieldValues) => {
         pagedAccommodations,
         loadingAccommodations,
         accommodation,
+        loadingAccommodationDetails,
         createAccommodation,
         updateAccommodation
     }

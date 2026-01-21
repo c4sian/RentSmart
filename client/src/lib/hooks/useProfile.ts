@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 export const useProfile = () => {
     const location = useLocation();
 
-    const { data: userData } = useQuery<UserProfile>({
+    const { data: userProfile, isLoading: loadingUserProfile } = useQuery<UserProfile>({
         queryKey: ['users', 'me'],
         queryFn: async () => {
             const response = await api.get('/users/me');
@@ -22,7 +22,8 @@ export const useProfile = () => {
     })
 
     return {
-        userData,
+        userProfile,
+        loadingUserProfile,
         getOwnerDetails
     }
 }
